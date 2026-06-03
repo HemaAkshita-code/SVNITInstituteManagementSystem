@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class Student
 {	
@@ -21,11 +23,11 @@ public class Student
     public StudentAcademicProgress academic;
     public StudentCourseFeedback feedback;
 
-    Student(String userid, int currentSem, String name, long contactno) 
+    Student(String userid, String name, long contactno) 
     {
         this.userid = userid;
         this.dept = userid.substring(3,5);
-        this.currentSem = currentSem;
+        this.currentSem = StudentServices.getSemester(userid);
         
 		System.out.println("Student admitted " + userid);
        
@@ -39,4 +41,5 @@ public class Student
         feedback = new StudentCourseFeedback(userid, currentSem);
         
     }
+   
 }

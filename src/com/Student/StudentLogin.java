@@ -1,14 +1,10 @@
 package com.Student;
 
-import java.time.LocalDate;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Scanner;
 import com.Login.Login;
 
@@ -25,7 +21,6 @@ public class StudentLogin<T> implements Login<T>
 	private String passkey;
 	
 	public int currentSem = 1;
-	int currentYear = 1;
 	String department;
 	String graduationStatus;
 	String name = null;
@@ -36,16 +31,14 @@ public class StudentLogin<T> implements Login<T>
 		
 	}
 	
-	public void createAccount(String username) 
+	public void createAccount(String username, String name, long contactno) 
 	{		
 		Scanner scanner = new Scanner(System.in);
-		System.out.println("Full Name:");
-		this.name = scanner.nextLine();
-		System.out.println("Contact Number:");
-		this.contactno = scanner.nextLong();
+		this.name = name;
+		this.contactno = contactno;
 		
 		try
-		{
+		{ 
 			Class.forName("com.mysql.cj.jdbc.Driver");
 
 	        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/StudentLoginCredentials","root", "leaf");
@@ -53,7 +46,7 @@ public class StudentLogin<T> implements Login<T>
 			
 			ResultSet passwrd = stmt.executeQuery("select password from LoginCredentials where username = '" + username + "'");
 			
-			currentSem = semester(username);
+			currentSem = StudentServices.getSemester(username);
 			
 			if(currentSem > 8 || currentSem < 1)
             {
@@ -147,7 +140,7 @@ public class StudentLogin<T> implements Login<T>
 		passkey = Password;
 		this.department = userid.substring(3,5);
 		graduationStatus = userid.substring(0,1);
-		currentSem = semester(username);
+		currentSem = StudentServices.getSemester(username);
 		
 		return;
 	}
@@ -212,7 +205,7 @@ public class StudentLogin<T> implements Login<T>
 		if(verifyPassword(userid, passkey))	
 		{
 			System.out.println("Login Successful");
-			return (T) new Student(userid, currentSem, name, contactno);
+			return (T) new Student(userid, name, contactno);
 		}
 		
 		return null;
@@ -242,27 +235,6 @@ public class StudentLogin<T> implements Login<T>
 				passkey = newPassword;
 				System.out.println("Password changed successfully");
 			}
-	}
-	
-	public int semester(String username)
-	{
-		LocalDate today = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yy");
-        
-        String formattedDate = today.format(formatter);
-        
-        currentYear = Integer.parseInt(formattedDate.substring(3)) - Integer.parseInt(username.substring(1,3));
-                    
-        if(Integer.parseInt(formattedDate.substring(0,2)) < 6)
-        {
-            currentSem = currentYear*2;
-        }
-        else
-        {
-        		currentSem = (currentYear*2) - 1;
-        }
-                    
-        return currentSem;
 	}
 	
 }

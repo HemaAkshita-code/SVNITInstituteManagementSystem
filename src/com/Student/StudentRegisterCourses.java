@@ -103,7 +103,7 @@ public class StudentRegisterCourses
 						ps.setString(2, name);
 						ps.setLong(3, contactno);
 
-						ps.executeUpdate();
+						ps.execute();
 						
 					System.out.println("Course " + course + " registered successfully!");
 					
